@@ -24,6 +24,32 @@
 # Note that these operations are really simple. They won't work with
 # many-to-many relationships, and you may have to divide really big
 # lists into smaller chunks before sending them through.
+#
+# How to use:
+#
+# if bulk_save:
+#    for _k, v in to_class_name_objs_dict(obj_list_update).items():
+#        update_many(v)
+#
+#    for _k, v in to_class_name_objs_dict(obj_list_insert).items():
+#        insert_many(v)
+
+def chunks(data=[], n=500):
+    """Yield successive n-sized chunks from data list."""
+    for i in range(0, len(data), n):
+        yield data[i:i + n]
+
+def to_class_name_objs_dict(objs=[]):
+    data = OrderedDict()
+
+    for x in objs:
+        k = x.__class__.__name__
+        v = data.get(k, [])
+        v.append(x)
+
+        data.update({k: v})
+
+    return data
 
 def insert_many(objects, using="default"):
     """Insert list of Django objects in one SQL query. Objects must be
